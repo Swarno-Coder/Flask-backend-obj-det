@@ -5,6 +5,19 @@ from flask import Flask, request, Response
 
 #####################
 app = Flask(__name__)
+#####################
+
+classNames= []
+classFile = '..\\coco.names'
+with open(classFile,'rt') as f:
+    classNames = f.read().rstrip('\n').split('\n')
+configPath = '..\\ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
+weightsPath = '..\\frozen_inference_graph.pb'
+net = cv2.dnn_DetectionModel(weightsPath,configPath)
+net.setInputSize(320,320)
+net.setInputScale(1.0/ 127.5)
+net.setInputMean((127.5, 127.5, 127.5))
+net.setInputSwapRB(True)
 
 @app.route('/req', methods=['POST'])
 def send_img():
@@ -13,20 +26,6 @@ def send_img():
     img = Image.open(img.stream)
     thres = 0.55 # Threshold to detect object
     
-    classNames= []
-    classFile = '..\\coco.names'
-    with open(classFile,'rt') as f:
-        classNames = f.read().rstrip('\n').split('\n')
-
-    configPath = '..\\ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt'
-    weightsPath = '..\\frozen_inference_graph.pb'
-
-    net = cv2.dnn_DetectionModel(weightsPath,configPath)
-    net.setInputSize(320,320)
-    net.setInputScale(1.0/ 127.5)
-    net.setInputMean((127.5, 127.5, 127.5))
-    net.setInputSwapRB(True)
-
     classIds, confs, bbox = net.detect(img,confThreshold=thres)
     print(classIds,bbox)
     
