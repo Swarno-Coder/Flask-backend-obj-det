@@ -19,7 +19,7 @@ net.setInputScale(1.0/ 127.5)
 net.setInputMean((127.5, 127.5, 127.5))
 net.setInputSwapRB(True)
 
-@app.route('/req', methods=['POST'])
+@app.route('/req', methods=['GET'])
 def send_img():
     
     img = request.files['image']
@@ -37,7 +37,7 @@ def send_img():
             cv2.putText(img,str(round(confidence*100,2)),(box[0]+200,box[1]+30),
                 cv2.FONT_HERSHEY_COMPLEX,1,(0,255,0),2)
             
-    return request.post()
+    return request.post({"image recieved: Success"})
     
 if __name__ == "__main__":
     app.run(debug=True)
